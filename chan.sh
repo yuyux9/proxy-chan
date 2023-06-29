@@ -10,7 +10,7 @@ if ! check_command pv; then
     echo "pv is not installed. Installing..."
     if check_command apt; then
         sudo apt update
-        sudo apt install -y pv >/dev/null
+        sudo apt install -qq -y pv >/dev/null
     elif check_command yum; then
         sudo yum update
         sudo yum install -y pv >/dev/null
@@ -27,7 +27,7 @@ if ! check_command socat; then
     echo "socat is not installed. Installing..."
     if check_command apt; then
         sudo apt update
-        sudo apt install -y socat | pv -l >/dev/null
+        sudo apt install -qq -y socat | pv -l >/dev/null
     elif check_command yum; then
         sudo yum update
         sudo yum install -y socat | pv -l >/dev/null
@@ -44,7 +44,7 @@ if ! check_command curl; then
     echo "curl is not installed. Installing..."
     if check_command apt; then
         sudo apt update
-        sudo apt install -y curl | pv -l >/dev/null
+        sudo apt install -qq -y curl | pv -l >/dev/null
     elif check_command yum; then
         sudo yum update
         sudo yum install -y curl | pv -l >/dev/null
@@ -75,16 +75,19 @@ else
     socat TCP-LISTEN:$proxy_port,fork PROXY:$target_host:$target_port,proxyport=$proxy_port &
 fi
 
-# ~~~ capture Ctrl+C to kill the proxy server ~~~
-trap 'kill $(jobs -p)' SIGINT
+    # ~~~ capture Ctrl+C to kill the proxy server ~~~
+    trap 'kill $(jobs -p); exit' SIGINT
 
-# ~~~ wait for the proxy server to start ~~~
-sleep 1
+    # ~~~ wait for the proxy server to start ~~~
+    sleep 1
+    
+    while :
+    do
+        echo "Proxy server running. Press Ctrl+C to stop."
+        sleep 1
+    done
 
-# ~~~ perform your web testing by making requests through the proxy ~~~
-#echo "Performing a test request through the proxy..."
-#curl -x "$proxy_host:$proxy_port" http://localhost
-
-# ~~~ kill the proxy server ~~~
-echo "Kill the proxy server..."
-kill $(jobs -p)
+    # ~~~ kill the proxy server ~~~
+    echo "Killing the proxy server..."
+    kill $(jobs -p)
+done

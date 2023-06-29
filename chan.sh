@@ -43,6 +43,10 @@ fi
 
 # ~~~ ask for the target and proxy server configuration ~~~
 read -p "Enable SSL/TLS (HTTPS) support? (y/n): " enable_ssl
+read -p "Enter the proxy host: " proxy_host
+read -p "Enter the proxy port: " proxy_port
+read -p "Enter the target host: " target_host
+read -p "Enter the target port: " target_port
 if [[ $enable_ssl =~ ^[Yy]$ ]]; then
     # ~~~ generate a self-signed SSL certificate ~~~
     openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout key.pem -out cert.pem -days 365 -subj "/CN=$target_host"

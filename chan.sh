@@ -75,8 +75,11 @@ else
     socat TCP-LISTEN:$proxy_port,fork PROXY:$target_host:$target_port,proxyport=$proxy_port &
 fi
 
+ # ~~~ store the process ID (PID) of the proxy server ~~~
+    proxy_pid=$!
+
     # ~~~ capture Ctrl+C to kill the proxy server ~~~
-    trap 'kill $(jobs -p); exit' SIGINT
+    trap 'kill $proxy_pid; exit' SIGINT
 
     # ~~~ wait for the proxy server to start ~~~
     sleep 1
@@ -89,5 +92,5 @@ fi
 
     # ~~~ kill the proxy server ~~~
     echo "Killing the proxy server..."
-    kill $(jobs -p)
+    kill $proxy_pid
 done

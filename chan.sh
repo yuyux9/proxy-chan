@@ -1,60 +1,111 @@
 #!/usr/bin/env bash
 
+# ----------------------------------
+#-COLORZ-
+# ----------------------------------
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTRED='\033[1;31m'
+LIGHTGREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+LIGHTBLUE='\033[1;34m'
+LIGHTPURPLE='\033[1;35m'
+LIGHTCYAN='\033[1;36m'
+WHITE='\033[1;37m'
+
 # ~~~ check if a command is available on the system ~~~
 check_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# ~~~ check if pv is installed, if not, install it ~~~
-if ! check_command pv; then
-    echo "pv is not installed. Installing..."
-    if check_command apt; then
-        sudo apt update
-        sudo apt install -qq -y pv >/dev/null
-    elif check_command yum; then
-        sudo yum update
-        sudo yum install -y pv >/dev/null
-    else
-        echo "Fuck, unable to install pv. Please install it manually."
-        exit 1
-    fi
-else
-    echo "yaay! pv is already installed."
-fi
-
 # ~~~ check if socat is installed, if not, install it ~~~
 if ! check_command socat; then
-    echo "socat is not installed. Installing..."
+    printf "${RED}socat is not installed. Installing...${NOCOLOR}"
     if check_command apt; then
         sudo apt update
-        sudo apt install -qq -y socat | pv -l >/dev/null
+        sudo apt install -qq -y 2>/dev/null &
+pid=$! # Process Id of the previous running command
+
+spin='-\|/'
+
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r${spin:$i:1}" " "
+  sleep .1
+done
     elif check_command yum; then
         sudo yum update
-        sudo yum install -y socat | pv -l >/dev/null
+        sudo yum install -y socat 2>/dev/null &
+pid=$! # Process Id of the previous running command
+
+spin='-\|/'
+
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r${spin:$i:1}" " "
+  sleep .1
+done
     else
-        echo "Fuck, unable to install socat. Please install it manually."
+        printf "${RED}Fuck, unable to install socat. Please install it manually.${NOCOLOR}"
         exit 1
     fi
 else
-    echo "yaay! socat is already installed."
+    printf "${GREEN}yaay! socat is already installed.${NOCOLOR}"
 fi
+
+echo " "
 
 # ~~~ check if curl is installed, if not, install it ~~~
 if ! check_command curl; then
-    echo "curl is not installed. Installing..."
+    printf "${RED}curl is not installed. Installing...${NOCOLOR}"
     if check_command apt; then
         sudo apt update
-        sudo apt install -qq -y curl | pv -l >/dev/null
+        sudo apt install -qq -y curl 2>/dev/null &
+pid=$! # Process Id of the previous running command
+
+spin='-\|/'
+
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r${spin:$i:1}" " "
+  sleep .1
+done
     elif check_command yum; then
         sudo yum update
-        sudo yum install -y curl | pv -l >/dev/null
+        sudo yum install -y curl 2>/dev/null &
+pid=$! # Process Id of the previous running command
+
+spin='-\|/'
+
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r${spin:$i:1}" " "
+  sleep .1
+done
     else
-        echo "Fuck, unable to install curl. Please install it manually."
+        printf "${RED}Fuck, unable to install curl. Please install it manually.${NOCOLOR}"
         exit 1
     fi
 else
-    echo "yaay! curl is already installed."
+    printf "${GREEN}yaay! curl is already installed.${NOCOLOR}"
 fi
+
+echo " "
 
 # ~~~ ask for the target and proxy server configuration ~~~
 read -p "Enable SSL/TLS (HTTPS) support? (y/n): " enable_ssl
@@ -62,6 +113,9 @@ read -p "Enter the proxy host: " proxy_host
 read -p "Enter the proxy port: " proxy_port
 read -p "Enter the target host: " target_host
 read -p "Enter the target port: " target_port
+
+echo " "
+
 if [[ $enable_ssl =~ ^[Yy]$ ]]; then
     # ~~~ generate a self-signed SSL certificate ~~~
     openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout key.pem -out cert.pem -days 365 -subj "/CN=$target_host"
@@ -74,6 +128,8 @@ else
     echo "Starting the proxy server on $proxy_host:$proxy_port without SSL/TLS support..."
     socat TCP-LISTEN:$proxy_port,fork PROXY:$target_host:$target_port,proxyport=$proxy_port &
 fi
+
+echo " "
 
  # ~~~ store the process ID (PID) of the proxy server ~~~
     proxy_pid=$!

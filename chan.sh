@@ -79,7 +79,7 @@ fi
     proxy_pid=$!
 
     # ~~~ capture Ctrl+C to kill the proxy server ~~~
-    trap 'kill $proxy_pid; exit' SIGINT
+    trap 'echo "Killing the proxy server..." && kill $proxy_pid; exit' SIGINT
 
     # ~~~ wait for the proxy server to start ~~~
     sleep 1
@@ -89,8 +89,4 @@ fi
         echo "Proxy server running. Press Ctrl+C to stop."
         sleep 1
     done
-
-    # ~~~ kill the proxy server ~~~
-    echo "Killing the proxy server..."
-    kill $proxy_pid
 done

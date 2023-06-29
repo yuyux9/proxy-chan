@@ -5,15 +5,32 @@ check_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# ~~~ check if pv is installed, if not, install it ~~~
+if ! check_command pv; then
+    echo "pv is not installed. Installing..."
+    if check_command apt; then
+        sudo apt update
+        sudo apt install -y pv >/dev/null
+    elif check_command yum; then
+        sudo yum update
+        sudo yum install -y pv >/dev/null
+    else
+        echo "Fuck, unable to install pv. Please install it manually."
+        exit 1
+    fi
+else
+    echo "yaay! pv is already installed."
+fi
+
 # ~~~ check if socat is installed, if not, install it ~~~
 if ! check_command socat; then
     echo "socat is not installed. Installing..."
     if check_command apt; then
         sudo apt update
-        sudo apt install -y socat
+        sudo apt install -y socat | pv -l >/dev/null
     elif check_command yum; then
         sudo yum update
-        sudo yum install -y socat
+        sudo yum install -y socat | pv -l >/dev/null
     else
         echo "Fuck, unable to install socat. Please install it manually."
         exit 1
@@ -25,14 +42,12 @@ fi
 # ~~~ check if curl is installed, if not, install it ~~~
 if ! check_command curl; then
     echo "curl is not installed. Installing..."
-    if check_command apt-get; then
-        sudo apt-get update
-        sudo apt-get install -y curl
+    if check_command apt; then
+        sudo apt update
+        sudo apt install -y curl | pv -l >/dev/null
     elif check_command yum; then
         sudo yum update
-        sudo yum install -y curl
-    elif check_command brew; then
-        brew install curl
+        sudo yum install -y curl | pv -l >/dev/null
     else
         echo "Fuck, unable to install curl. Please install it manually."
         exit 1

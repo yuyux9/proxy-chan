@@ -29,8 +29,8 @@ check_command() {
 if ! check_command socat; then
     printf "${RED}socat is not installed. Installing...${NOCOLOR}"
     if check_command apt; then
-        sudo apt update
-        sudo apt install -qq -y 2>/dev/null &
+        #sudo apt update
+        sudo apt install socat -y 2>/dev/null &
 pid=$! # Process Id of the previous running command
 
 spin='-\|/'
@@ -43,7 +43,7 @@ do
   sleep .1
 done
     elif check_command yum; then
-        sudo yum update
+        #sudo yum update
         sudo yum install -y socat 2>/dev/null &
 pid=$! # Process Id of the previous running command
 
@@ -70,7 +70,7 @@ echo " "
 if ! check_command curl; then
     printf "${RED}curl is not installed. Installing...${NOCOLOR}"
     if check_command apt; then
-        sudo apt update
+        #sudo apt update
         sudo apt install -qq -y curl 2>/dev/null &
 pid=$! # Process Id of the previous running command
 

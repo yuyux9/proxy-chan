@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#~BY YUYU FROM 893CREW~
+
 # ----------------------------------
 #-COLORZ-
 # ----------------------------------
@@ -56,6 +58,9 @@ do
   printf "\r${spin:$i:1}" " "
   sleep .1
 done
+  printf "${GREEN}Successful!${NOCOLOR}"
+  echo " "
+  echo 'Now you have socat.'
     else
         printf "${RED}Fuck, unable to install socat. Please install it manually.${NOCOLOR}"
         exit 1
@@ -83,6 +88,9 @@ do
   printf "\r${spin:$i:1}" " "
   sleep .1
 done
+  printf "${GREEN}Successful!${NOCOLOR}"
+  echo " "
+  echo 'Now you have curl.'
     elif check_command yum; then
         sudo yum update
         sudo yum install -y curl 2>/dev/null &
@@ -142,7 +150,7 @@ echo " "
     
     while :
     do
-        echo "Proxy server running. Press Ctrl+C to stop."
+        printf "${GREEN}Proxy server running. Press Ctrl+C to stop.${NOCOLOR}"
         sleep 1
     done
 done
